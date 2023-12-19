@@ -2,11 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { TableContext } from "../../dataTableContext/Tablecontext";
 
 const Header = () => {
-  const { sortRow, headerRow, originalRow, selectedRows, changeAllChecked } =
+  const { sortRow, headerRow, originalRow, changeAllChecked } =
     useContext(TableContext);
-
-  // console.log(selectedRows);
-  const [allChecked, setAllChecked] = useState(false);
 
   let a = 0;
   originalRow.forEach((obj) => {
@@ -14,17 +11,11 @@ const Header = () => {
       a++;
     }
   });
-  console.log(a);
+  // console.log(a);
 
-  console.log("all checked", allChecked);
+  // console.log("OriginalRows length", originalRow.length);
 
-  console.log("OriginalRows length", originalRow.length);
-
-  const [isAllChecked, setIsAllChecked] = useState(allChecked);
-
-  // console.log(headerRow);
-  // console.log(isAllChecked);
-  // console.log(originalRow);
+  const [isAllChecked, setIsAllChecked] = useState(false);
   const [hRows, setHRows] = useState(headerRow);
 
   const getSortSymbol = (item) => {
@@ -66,7 +57,7 @@ const Header = () => {
   };
 
   useEffect(() => {
-    console.log(a, originalRow);
+    // console.log(a, originalRow);
     if (a === originalRow.length) {
       setIsAllChecked(true);
     } else {

@@ -10,7 +10,7 @@ const Rows = () => {
     blurInputItem,
     editInputItem,
   } = useContext(TableContext);
-  // console.log(rows);
+  console.log(rows);
   const resultedRows = rows.slice(0, noOfRows);
 
   const handleCheckedRow = (id) => {

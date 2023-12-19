@@ -182,6 +182,8 @@ const headerRow = [
 
 let endIndex;
 let startIndex;
+let originalData = [];
+sampleRowData.forEach((obj) => originalData.push(structuredClone(obj)));
 
 export const TableContext = createContext({
   rows: sampleRowData,
@@ -216,61 +218,30 @@ function rowsReducer(state, action) {
     return newList;
   } else if (action.type === "sort_row") {
     const { sortType, sort, dummyRows } = action.payload;
-    // console.log(action.payload);
-    let type = sortType;
-    console.log(type, sort);
-    let sortedList;
-    if (type === "age") {
-      sortedList = [...dummyRows].sort((a, b) => {
-        if (type === "age" && sort !== "des") {
-          if (sort === "asc") {
-            return a[type] - b[type];
-          } else if (sort === "none") {
-            return b[type] - a[type];
-          }
+
+    let sortList = [...state].sort((a, b) => {
+      // console.log("sort...........", sort);
+      if (sort === "none") {
+        if (sortType === "firstName" || sortType === "lastName") {
+          return a[sortType].localeCompare(b[sortType]);
         }
-        return null;
-      });
-      if (type === "age" && sort === "des") {
-        return dummyRows;
-      }
-    } else if (type === "id") {
-      sortedList = [...dummyRows].sort((a, b) => {
-        if (type === "id" && sort !== "des") {
-          if (sort === "asc") {
-            return a[type] - b[type];
-          } else if (sort === "none") {
-            return b[type] - a[type];
-          }
+        return b[sortType] - a[sortType];
+      } else if (sort === "asc") {
+        if (sortType === "firstName" || sortType === "lastName") {
+          return b[sortType].localeCompare(a[sortType]);
         }
-        return null;
-      });
-      if (type === "id" && sort === "des") {
-        return dummyRows;
+        return a[sortType] - b[sortType];
       }
-    } else if (type === "firstName" || type === "lastName") {
-      sortedList = [...dummyRows].sort((a, b) => {
-        if (sort === "none") {
-          if (a[type] > b[type]) {
-            return 1;
-          } else if (a[type] < b[type]) {
-            return -1;
-          }
-        } else if (sort === "asc") {
-          if (a[type] > b[type]) {
-            return -1;
-          } else if (a[type] < b[type]) {
-            return 1;
-          }
-        }
-        return null;
-      });
-      if (sort === "des") {
-        sortedList = dummyRows;
-      }
+      return null;
+    });
+    if (sort === "des") {
+      let newList = [...dummyRows].sort((a, b) => a.id - b.id);
+      sortList = newList;
     }
 
-    return sortedList;
+    // console.log(sortList);
+
+    return sortList;
   } else if (action.type === "dClick_row_item") {
     const { id } = action.payload;
     const editedRows = [...state].map((obj) => {
@@ -370,7 +341,6 @@ export default function TableContextProvider({ children }) {
   const [dummyRows, setDummyRows] = useState(originalRow);
   const [headRow, setHeadRow] = useState(headerRow);
   const [pageNum, setPageNum] = useState(pageNumber);
-  const [selectedRows, setSelectedRows] = useState([]);
 
   const handleSortRow = ({ name, sort }) => {
     setHeadRow(headerRow);
@@ -384,6 +354,29 @@ export default function TableContextProvider({ children }) {
         : name === "Last Name"
         ? "lastName"
         : "age";
+
+    let sortList = dummyRows.sort((a, b) => {
+      // console.log("sort...........", sort);
+      if (sort === "none") {
+        if (sortType === "firstName" || sortType === "lastName") {
+          return a[sortType].localeCompare(b[sortType]);
+        }
+        return b[sortType] - a[sortType];
+      } else if (sort === "asc") {
+        if (sortType === "firstName" || sortType === "lastName") {
+          return b[sortType].localeCompare(a[sortType]);
+        }
+        return a[sortType] - b[sortType];
+      }
+      return null;
+    });
+    if (sort === "des") {
+      // console.log(originalData);
+      sortList = originalData;
+    }
+
+    setDummyRows(sortList);
+
     rowsDispatch({
       type: "sort_row",
       payload: { sortType, sort, dummyRows },
@@ -483,8 +476,6 @@ export default function TableContextProvider({ children }) {
   };
 
   const handleChangeAllChecked = (allChecked) => {
-    console.log(allChecked);
-    setSelectedRows(dummyRows.map((obj) => obj.id));
     setDummyRows(dummyRows.map((obj) => ({ ...obj, isChecked: allChecked })));
     rowsDispatch({
       type: "all_checked",
@@ -536,7 +527,6 @@ export default function TableContextProvider({ children }) {
     pageNumber: pageNum,
     headerRow: headRow,
     originalRow: dummyRows,
-    selectedRows: selectedRows,
     rowsPerTable: handleRowsPerTable,
     addRow: handleAddRow,
     blurInputItem: handleBlurInput,
