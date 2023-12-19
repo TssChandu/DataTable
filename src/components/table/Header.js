@@ -5,12 +5,20 @@ const Header = () => {
   const { sortRow, headerRow, originalRow, selectedRows, changeAllChecked } =
     useContext(TableContext);
 
-  console.log(selectedRows);
+  // console.log(selectedRows);
+  const [allChecked, setAllChecked] = useState(false);
 
-  let allChecked = false;
-  if (selectedRows.length === originalRow.length) {
-    allChecked = true;
-  }
+  let a = 0;
+  originalRow.forEach((obj) => {
+    if (obj.isChecked) {
+      a++;
+    }
+  });
+  console.log(a);
+
+  console.log("all checked", allChecked);
+
+  console.log("OriginalRows length", originalRow.length);
 
   const [isAllChecked, setIsAllChecked] = useState(allChecked);
 
@@ -56,6 +64,15 @@ const Header = () => {
       getSortSymbol(item);
     }
   };
+
+  useEffect(() => {
+    console.log(a, originalRow);
+    if (a === originalRow.length) {
+      setIsAllChecked(true);
+    } else {
+      setIsAllChecked(false);
+    }
+  }, [originalRow.length, a]);
 
   return (
     <div className="flex flex-row justify-start">
