@@ -371,8 +371,8 @@ export default function TableContextProvider({ children }) {
       return null;
     });
     if (sort === "des") {
-      // console.log(originalData);
-      sortList = originalData;
+      let newList = [...dummyRows].sort((a, b) => a.id - b.id);
+      sortList = newList;
     }
 
     setDummyRows(sortList);
